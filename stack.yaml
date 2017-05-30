@@ -1,0 +1,8 @@
+flags: {}
+extra-package-dbs: []
+packages:
+- '.'
+extra-deps:
+- haskell-lexer-1.0.1
+- pretty-show-1.6.13
+resolver: ghc-7.10.3
