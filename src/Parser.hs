@@ -11,7 +11,7 @@ parseNewline :: Parser Container
 parseNewline = do
     string "\n"
     spaces
-    -- notFollowedBy $ char '<'
+    -- notFollowedBy $ char '<' -- GEL
     return Newline
 
 parseString :: Parser Container
