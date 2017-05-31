@@ -1,11 +1,12 @@
 module Main where
 
-import Parser
 import System.Environment
-import qualified Text.Show.Pretty as PrettyShow
+import Parser
+import Printer
 
+-- Programa recebe um ficheiro HTML como argumento para realizar o parsing
 main :: IO ()
 main = do
     [file] <- getArgs
     text <- readFile file
-    putStrLn $ PrettyShow.ppShow $ parsing text
+    prettyPrint $ parsing text
