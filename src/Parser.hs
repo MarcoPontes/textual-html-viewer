@@ -1,35 +1,35 @@
 module Parser (
-    parsing
+    parsing,
+    Container (..)
 ) where
 
 import Text.Parsec
 import Text.Parsec.String
 
-data Container = Newline | Text String | Container String [Container] deriving Show
+data Container = Text String Int | Container String [Container] Int
 
-parseNewline :: Parser Container
-parseNewline = do
-    string "\n"
-    spaces
-    -- notFollowedBy $ char '<' -- GEL
-    return Newline
+-- Realiza o parsing de texto
+parseString :: Int -> Parser Container
+parseString depth = do
+    words <- many1 (noneOf "<")
+    return $ Text words depth
 
-parseString :: Parser Container
-parseString = do
-    word <- many1 (noneOf "\n<")
-    return $ Text word
-
-main :: Parser Container
-main = do
+-- Método principal em que é interpretado o HTML
+htmlParser :: Int -> Parser Container
+htmlParser depth = do
     spaces
     char '<'
+    notFollowedBy $ char '/' -- Assegura que estou no ínicio da tag
+
     tag <- many1 (noneOf ">") <* char '>'
-    word <- many (try main <|> try parseString <|> try parseNewline)
+    words <- many (try (htmlParser (depth + 1)) <|> try (parseString (depth + 1)))
+
     spaces
     string "</" <* string tag <* char '>'
-    return $ Container tag word
+
+    return $ Container tag words depth
 
 parsing :: String -> Container
-parsing text = case parse main "MyParser" text of
+parsing text = case parse (htmlParser $ -1) "MyParser" text of
     Left err -> error (show err)
     Right value -> value
